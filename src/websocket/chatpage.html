@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WebSocket Chat</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<style>
+body {
+  background: #121212;
+  color: #f0f0f0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.chat-container {
+  width: 400px;
+  background: #1e1e1e;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.chat-header {
+  background: #333;
+  padding: 10px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.chat-box {
+  height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+}
+
+.chat-box div {
+  margin-bottom: 10px;
+}
+
+.input-area {
+  display: flex;
+  border-top: 1px solid #333;
+}
+
+#messageInput {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+  background: #2a2a2a;
+  color: #fff;
+}
+
+button {
+  padding: 10px 15px;
+  background: #ffb300;
+  color: #000;
+  border: none;
+  cursor: pointer;
+}
+
+</style>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">WebSocket Chat</div>
+    <div id="chat-box" class="chat-box"></div>
+    <div class="input-area">
+      <input type="text" id="messageInput" placeholder="Type a message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+  // Replace this with your actual WebSocket endpoint
+  let ids = 1233333333
+  console.log(ids)
+const socket = new WebSocket(`ws://127.0.0.1:8080/ws/chat/?id=d3066653-3395-49f4-be59-843ed256b9d5`);
+
+const chatBox = document.getElementById("chat-box");
+const messageInput = document.getElementById("messageInput");
+
+socket.onopen = () => {
+  appendMessage("✅ Connected to server");
+};
+
+socket.onmessage = (event) => {
+  appendMessage("📩 Server: " + event.data);
+};
+socket.onclose = () => {
+  appendMessage("❌ Disconnected from server");
+};
+
+socket.onerror = (error) => {
+  console.error("WebSocket error:", error);
+  appendMessage("⚠️ WebSocket error");
+};
+
+function sendMessage() {
+  const message = messageInput.value.trim();
+  if (message) {
+    socket.send(message);
+    appendMessage("📤 You: " + message);
+    messageInput.value = "";
+  }
+}
+
+function appendMessage(msg) {
+  const msgDiv = document.createElement("div");
+  msgDiv.textContent = msg;
+  chatBox.appendChild(msgDiv);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+</script>
+</body>
+</html>
